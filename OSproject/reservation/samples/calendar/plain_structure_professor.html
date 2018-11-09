@@ -1,0 +1,282 @@
+<!doctype html>
+	
+<head>
+    <title>Mini calendar outside the scheduler</title>
+	<script type="text/javascript" src="http://code.jquery.com/jquery-2.2.3.min.js"></script>
+	<script src='../../codebase/dhtmlxscheduler.js' type="text/javascript" charset="utf-8"></script>
+	<link rel='STYLESHEET' type='text/css' href='../../codebase/dhtmlxscheduler.css'>
+	<script src="../../codebase/ext/dhtmlxscheduler_editors.js" type="text/javascript" charset="utf-8"></script>
+	<script src="../../codebase/ext/dhtmlxscheduler_minical.js" type="text/javascript" charset="utf-8"></script>
+	<link rel="stylesheet" href="http://www.w3schools.com/lib/w3.css">
+	<link rel="stylesheet" href="http://www.w3schools.com/lib/w3-theme-black.css">
+	<link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.3.0/css/font-awesome.min.css">
+	<link rel="stylesheet" href="home_css.css">
+		
+<style type="text/css" media="screen">
+	html, body{
+		margin:0px;
+		padding:0px;
+		height:100%;
+		overflow: hidden;
+
+	}
+	
+	.dhx_calendar_click {
+		background-color: #D5D5D5 !important;
+	}
+
+
+	.dhx_cal_event div.dhx_footer,
+	.dhx_cal_event.past_event div.dhx_footer,
+	.dhx_cal_event.event_reservation div.dhx_footer{
+		background-color: transparent !important;
+	}
+	.dhx_cal_event .dhx_body{
+		-webkit-transition: opacity 0.1s;
+		transition: opacity 0.1s;
+		opacity: 0.7;
+	}
+	.dhx_cal_event .dhx_title{
+		line-height: 12px;
+	}
+	.dhx_cal_event_line:hover,
+	.dhx_cal_event:hover .dhx_body,
+	.dhx_cal_event.selected .dhx_body,
+	.dhx_cal_event.dhx_cal_select_menu .dhx_body{
+		opacity: 1;
+	}
+
+	.dhx_cal_event.event_reservation div, .dhx_cal_event_line.event_reservation{
+		background-color: #F15F5F !important;
+		border-color: #839595 !important;
+	}
+	.dhx_cal_event_clear.event_reservation{
+		color:#B82594 !important;
+	}
+
+</style>
+
+<script type="text/javascript" charset="utf-8">
+
+	scheduler.config.prevent_cache = true;
+	scheduler.config.first_hour=9;	
+	scheduler.config.last_hour=18;
+	scheduler.config.limit_time_select = true;
+	scheduler.config.details_on_create=true;
+	scheduler.config.details_on_dblclick=true;
+
+
+	var prev = null;
+	var curr = null;
+	var next = null;
+
+
+
+	function doOnLoad() {
+
+		scheduler.locale.labels.section_text = '이름/학번';
+		scheduler.locale.labels.section_select = '예약';
+
+		scheduler.templates.event_class=function(start, end, event){
+			var css = "";
+
+			if(event.subject) // if event has subject property then special class should be assigned
+				css += "event_"+event.subject;
+
+			if(event.id == scheduler.getState().select_id){
+				css += " selected";
+			}
+			return css; // default return
+			};
+
+		var subject = [
+			{ key: '', label: '' },
+			{ key: 'reservation', label: '예약완료' },
+		];
+
+		scheduler.config.lightbox.sections = [
+			{ name: "text", height: 30, map_to: "text", type: "textarea", focus: true },
+			{ name:"select", height:20, type:"select", options: subject, map_to:"subject"},
+			{ name: "time", height: 72, type: "calendar_time", map_to: "auto" },
+		];
+
+
+		var today = new Date();
+		var y = today.getFullYear()
+		var m = today.getMonth()
+		var d = today.getDate()
+		scheduler.init('scheduler_here',new Date(y,m,d),"week");
+		scheduler.load("./data/events.xml", function() {
+			scheduler.showLigtbox(47);
+		});
+		
+		var calendar = scheduler.renderCalendar({
+			container:"cal_here", 
+			navigation:true,
+			handler:function(date){
+				scheduler.setCurrentView(date, scheduler._mode);
+			}
+		});
+
+		scheduler.linkCalendar(calendar);
+		scheduler.setCurrentView(scheduler._date, scheduler._mode);
+
+	}
+</script>
+</head>
+
+
+<body onload="doOnLoad();">
+<!-- Side Navigation -->
+<nav class="w3-sidenav w3-white w3-card-2 w3-animate-left" style="display:none" id="mySidenav">
+  <a href="javascript:void(0)" id="close" onclick="w3_close()" class="w3-closenav w3-xxxlarge w3-text-theme">Close <i class="fa fa-remove"></i></a>
+  <h1 class="w3-xxxlarge w3-text-teal" id="NavTitle">Side Navigation</h1>
+  <a href="Home.html">메인 화면</a>
+  <a href="javascript:void(0)">상담 예약</a>
+  <a href="javascript:void(0)">메세지</a>
+  <a href="javascript:void(0)">교수님 정보확인</a>
+  <a href="SignUp.html">회원가입</a>
+</nav>
+
+<!-- Header -->
+<header class="w3-container w3-theme w3-padding" id="myHeader">
+  <i onclick="w3_open()" class="fa fa-bars w3-xlarge w3-opennav"></i> 
+  <div id="box1" class="w3-center">
+  <h4 id="line">OPENSOURCE TEAM ZOZO's WEB SITES</h4>
+  <h1 id="line1" class="w3-xxxlarge w3-animate-bottom">똑똑 계세요</h1>
+    <div id="line2">
+      <button id="BtCss" onclick="document.getElementById('id01').style.display='block'" style="font-weight:900;">Login</button>
+    </div>
+    <div id="line3">
+     <button id="BtCss" ><a href="SIgnUp.html">SignUp</a></button>
+    </div>
+  </div>
+</header>
+<div id="id01" class="w3-modal">
+    <div class="w3-modal-content w3-card-8 w3-animate-top" id="login">
+      <header class="w3-container w3-theme-l1"> 
+        <span onclick="document.getElementById('id01').style.display='none'" class="w3-closebtn">×</span>
+        <h4>Plase Login</h4>
+        <h5>You can login for two ways that is student or professor<i class="fa fa-smile-o"></i></h5>
+      </header>
+      <div class="w3-padding">
+        <form method="post" action="home.html">
+          <p>Login</p>
+           ID: <input type="text" name="id" id="Id"><br>
+           PW: <input type="password" name="pass" id="Pass"><br>
+           <input type="button" value="Login" id="loginBt"> 
+          </form>
+          <div id="space"></div>
+      </div>
+      <footer class="w3-container w3-theme-l1">
+        <p><a href="SignUp.html">Sign Up</a></p>
+      </footer>
+    </div>
+</div>
+<div class="w3-container">
+<hr>
+<input type="button" value="SAVE" style="float:right">
+</div>
+<div class="w3-center">
+</div>
+
+<!-- Script for Sidenav, Tabs, Accordions, Progress bars and slideshows -->
+<script>
+// Side navigation
+function w3_open() {
+    var x = document.getElementById("mySidenav");
+    x.style.width = "100%";
+    x.style.textAlign = "center";
+    x.style.fontSize = "50px";
+    x.style.paddingTop = "10%";
+    x.style.display = "block";
+}
+function w3_close() {
+    document.getElementById("mySidenav").style.display = "none";
+}
+
+// Tabs
+function openCity(evt, cityName) {
+  var i;
+  var x = document.getElementsByClassName("city");
+  for (i = 0; i < x.length; i++) {
+     x[i].style.display = "none";
+  }
+  var activebtn = document.getElementsByClassName("testbtn");
+  for (i = 0; i < x.length; i++) {
+      activebtn[i].className = activebtn[i].className.replace(" w3-dark-grey", "");
+  }
+  document.getElementById(cityName).style.display = "block";
+  evt.currentTarget.className += " w3-dark-grey";
+}
+
+var mybtn = document.getElementsByClassName("testbtn")[0];
+mybtn.click();
+
+// Accordions
+function myAccFunc(id) {
+    var x = document.getElementById(id);
+    if (x.className.indexOf("w3-show") == -1) {
+        x.className += " w3-show";
+        x.previousElementSibling.className += " w3-dark-grey";
+    } else { 
+        x.className = x.className.replace(" w3-show", "");
+        x.previousElementSibling.className = 
+        x.previousElementSibling.className.replace(" w3-dark-grey", "");
+    }
+}
+
+// Slideshows
+var slideIndex = 1;
+
+function plusDivs(n) {
+slideIndex = slideIndex + n;
+showDivs(slideIndex);
+}
+
+function showDivs(n) {
+  var x = document.getElementsByClassName("mySlides");
+  if (n > x.length) {slideIndex = 1}    
+  if (n < 1) {slideIndex = x.length} ;
+  for (i = 0; i < x.length; i++) {
+     x[i].style.display = "none";  
+  }
+  x[slideIndex-1].style.display = "block";  
+}
+
+showDivs(1);
+
+// Progress Bars
+function move() {
+  var elem = document.getElementById("myBar");   
+  var width = 1;
+  var id = setInterval(frame, 10);
+  function frame() {
+    if (width == 100) {
+      clearInterval(id);
+    } else {
+      width++; 
+      elem.style.width = width + '%'; 
+      document.getElementById("demoprgr").innerHTML = width * 1  + '%';
+    }
+  }
+}
+</script>
+	<div style='float: left; padding:10px;'>
+		<div id="cal_here" style='width:250px;'></div>
+	</div>
+	<div id="scheduler_here" class="dhx_cal_container" style='width:auto; height:100%;'>
+		<div class="dhx_cal_navline">
+			<div class="dhx_cal_prev_button">&nbsp;</div>
+			<div class="dhx_cal_next_button">&nbsp;</div>
+			<div class="dhx_cal_today_button"></div>
+			<div class="dhx_cal_date"></div>
+		</div>
+		<div class="dhx_cal_header">
+		</div>
+		<div class="dhx_cal_data">
+		</div>
+	</div>
+<script type="text/javascript" src="st.js"></script>
+<script type="text/javascript" src="base.js"></script>
+</body>
